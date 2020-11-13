@@ -71,6 +71,15 @@ addTodo(task :$task)
 }
 
 `
+const DELETE_TASK = gql`
+mutation delTask($id: ID!) {
+  delTodo(id: $id) {
+    text
+  }
+}
+`
+
+
 
 
 export default function Home() {
@@ -80,6 +89,11 @@ export default function Home() {
   const [todos, setTodos] = useState([{}])
   let inputText;
   const [addTodo] = useMutation(ADD_TODO)
+  const [delTask ] =useMutation(DELETE_TASK)
+
+
+
+
   const addTask = () => {
     addTodo({
       variables: {
@@ -89,6 +103,19 @@ export default function Home() {
     })
     inputText.value = "";
   }
+
+  const deleteTask = (e) => {
+    e.preventDefault()
+    delTask({
+      variables: {
+        id: e.target.id
+      },
+      refetchQueries: [{ query: GET_TODOS }]
+    })
+  
+  }
+
+
   const { loading, error, data } = useQuery(GET_TODOS);
 
   if (loading)
@@ -103,37 +130,47 @@ export default function Home() {
         <h1> Add Task </h1>
         <input type="text" ref={node => {
           inputText = node;
-        }}/>
+        }} />
       </label>
       <button onClick={addTask}>Add Task</button>
 
-<br/><br/><br/>
+      <br /><br /><br />
       <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>ID</StyledTableCell>
-            <StyledTableCell>TASK</StyledTableCell>
-            <StyledTableCell>STATUS</StyledTableCell>
-            
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.todos.map((da) => (
- <StyledTableRow key={da.id}>
- <StyledTableCell>
-   {da.id}
- </StyledTableCell>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>ID</StyledTableCell>
+              <StyledTableCell>TASK</StyledTableCell>
+              <StyledTableCell>STATUS</StyledTableCell>
+              <StyledTableCell>DELETE</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.todos.map((da) => (
+              <StyledTableRow key={da.id}>
+                <StyledTableCell>
+                  {da.id}
+                </StyledTableCell>
 
 
 
- <StyledTableCell >{da.task}</StyledTableCell>
- <StyledTableCell>{da.status.toString()}</StyledTableCell>
-</StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                <StyledTableCell >{da.task}</StyledTableCell>
+                <StyledTableCell>{da.status.toString()}</StyledTableCell>
+
+                <StyledTableCell>
+
+<button onClick={deleteTask}>
+DeleteTask
+  </button>
+
+                </StyledTableCell>
+
+
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
 
     </div>

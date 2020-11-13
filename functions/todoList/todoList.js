@@ -1,6 +1,12 @@
 const { ApolloServer, gql } = require("apollo-server-lambda");
 var faunadb = require("faunadb"),
   q = faunadb.query;
+
+
+  var adminClient = new faunadb.Client({
+    secret: "fnAD6jOBMOACBYsnWofZoXmjA9hpeCGckVF9JZwU",
+  });
+
 const typeDefs = gql`
   type Query {
     todos: [Todo!]
@@ -8,6 +14,7 @@ const typeDefs = gql`
 
   type Mutation {
     addTodo(task: String!): Todo
+    delTodo(id: ID!): Todo
   }
 
   type Todo {
@@ -52,9 +59,6 @@ const resolvers = {
   Mutation: {
     addTodo: async (_, { task }) => {
       try {
-        var adminClient = new faunadb.Client({
-          secret: "fnAD6jOBMOACBYsnWofZoXmjA9hpeCGckVF9JZwU",
-        });
         const result = await adminClient.query(
           q.Create(q.Collection("todo"), {
             data: {
@@ -70,6 +74,20 @@ const resolvers = {
         console.log(error);
       }
     },
+
+// deleting task 
+delTodo: async (_, { id }) => {
+  try {
+    const result = await adminClient.query(
+      q.Delete(q.Ref(q.Collection("todo"), id))
+
+    )
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
+},
+
   },
 };
 

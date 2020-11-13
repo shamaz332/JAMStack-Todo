@@ -31,7 +31,14 @@ const resolvers = {
         );
 
         console.log(result);
-        return [{}];
+        return result.data.map(da => {
+          return {
+            id: da.ts,
+            task: da.data.task,
+            status: da.data.status
+          }
+        })
+      
       } catch (error) {
         console.log(error);
       }

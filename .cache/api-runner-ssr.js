@@ -1,4 +1,7 @@
 var plugins = [{
+      plugin: require('/home/shamaz/web root/12c/node_modules/gatsby-plugin-material-ui/gatsby-ssr'),
+      options: {"plugins":[]},
+    },{
       plugin: require('/home/shamaz/web root/12c/gatsby-ssr'),
       options: {"plugins":[]},
     }]

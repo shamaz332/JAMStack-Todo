@@ -24,9 +24,9 @@
           "name": "/home/shamaz/web root/12c/node_modules/@babel/preset-typescript/lib/index.js",
           "options": {
             "plugins": [],
+            "allExtensions": false,
             "isTSX": false,
-            "jsxPragma": "React",
-            "allExtensions": false
+            "jsxPragma": "React"
           }
         }
       ],
@@ -59,9 +59,9 @@
           "name": "/home/shamaz/web root/12c/node_modules/@babel/preset-typescript/lib/index.js",
           "options": {
             "plugins": [],
+            "allExtensions": false,
             "isTSX": false,
-            "jsxPragma": "React",
-            "allExtensions": false
+            "jsxPragma": "React"
           }
         }
       ],
@@ -94,9 +94,9 @@
           "name": "/home/shamaz/web root/12c/node_modules/@babel/preset-typescript/lib/index.js",
           "options": {
             "plugins": [],
+            "allExtensions": false,
             "isTSX": false,
-            "jsxPragma": "React",
-            "allExtensions": false
+            "jsxPragma": "React"
           }
         }
       ],
@@ -129,9 +129,9 @@
           "name": "/home/shamaz/web root/12c/node_modules/@babel/preset-typescript/lib/index.js",
           "options": {
             "plugins": [],
+            "allExtensions": false,
             "isTSX": false,
-            "jsxPragma": "React",
-            "allExtensions": false
+            "jsxPragma": "React"
           }
         }
       ],

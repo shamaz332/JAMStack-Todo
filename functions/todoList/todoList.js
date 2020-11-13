@@ -1,46 +1,50 @@
-const { ApolloServer, gql } = require('apollo-server-lambda')
-
+const { ApolloServer, gql } = require("apollo-server-lambda");
+var faunadb = require("faunadb"),
+  q = faunadb.query;
 const typeDefs = gql`
   type Query {
-    hello: String
-    allAuthors: [Author!]
-    author(id: Int!): Author
-    authorByName(name: String!): Author
+    todos: [Todo!]
   }
-  type Author {
+  type Todo {
     id: ID!
-    name: String!
-    married: Boolean!
+    task: String!
+    status: Boolean!
   }
-`
-
-const authors = [
-  { id: 1, name: 'Terry Pratchett', married: false },
-  { id: 2, name: 'Stephen King', married: true },
-  { id: 3, name: 'JK Rowling', married: false },
-]
-
+`;
 const resolvers = {
   Query: {
-    hello: () => {
-      return 'Hello, world!'
+    todos: async () => {
+      try {
+        var adminClient = new faunadb.Client({
+          secret: "fnAD6jOBMOACBYsnWofZoXmjA9hpeCGckVF9JZwU",
+        });
+        const result = await adminClient.query(
+          q.Map(
+            q.Paginate(q.Match(q.Index('task'))),
+            q.Lambda(x => q.Get(x))
+          )
+
+        );
+
+console.log(result.ref.data)
+return [{}]
+      } catch (error) {
+        console.log(error);
+      }
     },
-    allAuthors: () => {
-      return authors
-    },
-    author: () => {},
-    authorByName: (root, args) => {
-      console.log('hihhihi', args.name)
-      return authors.find((author) => author.name === args.name) || 'NOTFOUND'
-    },
+    // authorByName: (root, args) => {
+    //   console.log('hihhihi', args.name)
+    //   return authors.find((author) => author.name === args.name) || 'NOTFOUND'
+    // },
   },
-}
+};
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-})
+});
 
-const handler = server.createHandler()
+const handler = server.createHandler();
 
-module.exports = { handler }
+module.exports = { handler };
+ 

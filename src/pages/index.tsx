@@ -1,14 +1,25 @@
 import React from "react"
-import { useQuery } from '@apollo/client';
+import { useQuery,useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 
 
 // This query is executed at run time by Apollo.
-const APOLLO_QUERY = gql`
+const GET_TODOS = gql`
 {
-  message
+ todos{ 
+   task,
+   id,
+   status
+ }
 }
 `;
+
+const ADD_TODO = gql`
+
+
+
+`
+
 
 export default function Home() {
   const { loading, error, data } = useQuery(APOLLO_QUERY);

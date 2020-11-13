@@ -5,6 +5,11 @@ const typeDefs = gql`
   type Query {
     todos: [Todo!]
   }
+
+  type Mutation {
+    addTodo(task: String!): Todo
+  }
+
   type Todo {
     id: ID!
     task: String!
@@ -13,21 +18,20 @@ const typeDefs = gql`
 `;
 const resolvers = {
   Query: {
-    todos: async () => {
+    todos: async (root, args, context) => {
       try {
         var adminClient = new faunadb.Client({
           secret: "fnAD6jOBMOACBYsnWofZoXmjA9hpeCGckVF9JZwU",
         });
         const result = await adminClient.query(
           q.Map(
-            q.Paginate(q.Match(q.Index('task'))),
-            q.Lambda(x => q.Get(x))
+            q.Paginate(q.Match(q.Index("task"))),
+            q.Lambda((x) => q.Get(x))
           )
-
         );
 
-console.log(result.ref.data)
-return [{}]
+        console.log(result);
+        return [{}];
       } catch (error) {
         console.log(error);
       }
@@ -36,6 +40,29 @@ return [{}]
     //   console.log('hihhihi', args.name)
     //   return authors.find((author) => author.name === args.name) || 'NOTFOUND'
     // },
+  },
+
+  Mutation: {
+    addTodo: async (_, { task }) => {
+      try {
+        var adminClient = new faunadb.Client({
+          secret: "fnAD6jOBMOACBYsnWofZoXmjA9hpeCGckVF9JZwU",
+        });
+        const result = await adminClient.query(
+          q.Create(q.Collection("todo"), {
+            data: {
+              task: task,
+              status: false,
+            },
+          })
+        );
+
+
+        return result.ref.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };
 
@@ -47,4 +74,3 @@ const server = new ApolloServer({
 const handler = server.createHandler();
 
 module.exports = { handler };
- 

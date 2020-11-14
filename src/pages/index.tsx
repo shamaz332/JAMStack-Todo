@@ -53,9 +53,10 @@ const StyledTableRow = withStyles((theme: Theme) =>
 const GET_TODOS = gql`
 {
  todos{ 
+  id,
    task,
-   id,
    status
+  
  }
 }
 `;
@@ -72,9 +73,10 @@ addTodo(task :$task)
 
 `
 const DELETE_TASK = gql`
-mutation delTask($id: ID!) {
+mutation delTodo($id: ID!) {
   delTodo(id: $id) {
-    text
+    task
+ 
   }
 }
 `
@@ -89,15 +91,16 @@ export default function Home() {
   const [todos, setTodos] = useState([{}])
   let inputText;
   const [addTodo] = useMutation(ADD_TODO)
-  const [delTask ] =useMutation(DELETE_TASK)
-
+  const [delTodo] = useMutation(DELETE_TASK)
+  const { loading, error, data } = useQuery(GET_TODOS);
 
 
 
   const addTask = () => {
     addTodo({
       variables: {
-        task: inputText.value
+        task: inputText.value,
+       
       },
       refetchQueries: [{ query: GET_TODOS }]
     })
@@ -106,17 +109,20 @@ export default function Home() {
 
   const deleteTask = (e) => {
     e.preventDefault()
-    delTask({
+    console.log(JSON.stringify(e.currentTarget.value))
+    delTodo({
+
+
       variables: {
-        id: e.target.id
+        id: e.currentTarget.value,
       },
       refetchQueries: [{ query: GET_TODOS }]
     })
-  
+
   }
 
 
-  const { loading, error, data } = useQuery(GET_TODOS);
+
 
   if (loading)
     return <h2>Loading.....</h2>
@@ -159,8 +165,8 @@ export default function Home() {
 
                 <StyledTableCell>
 
-<button onClick={deleteTask}>
-DeleteTask
+                  <button onClick={deleteTask} value={da.id}>
+                    DeleteTask
   </button>
 
                 </StyledTableCell>

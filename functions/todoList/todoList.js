@@ -27,9 +27,6 @@ const resolvers = {
   Query: {
     todos: async (root, args, context) => {
       try {
-        var adminClient = new faunadb.Client({
-          secret: "fnAD6jOBMOACBYsnWofZoXmjA9hpeCGckVF9JZwU",
-        });
         const result = await adminClient.query(
           q.Map(
             q.Paginate(q.Match(q.Index("task"))),
@@ -40,7 +37,7 @@ const resolvers = {
         console.log(result);
         return result.data.map(da => {
           return {
-            id: da.ts,
+            id: da.ref.id,
             task: da.data.task,
             status: da.data.status
           }
@@ -69,7 +66,7 @@ const resolvers = {
         );
 
 
-        return result.ref.data;
+        return result.data;
       } catch (error) {
         console.log(error);
       }
@@ -78,6 +75,7 @@ const resolvers = {
 // deleting task 
 delTodo: async (_, { id }) => {
   try {
+
     const result = await adminClient.query(
       q.Delete(q.Ref(q.Collection("todo"), id))
 

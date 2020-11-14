@@ -11,7 +11,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-
+import Button from '@material-ui/core/Button';
+import Modal from '@material-ui/core/Modal';
 
 const useStyles = makeStyles({
   table: {
@@ -27,6 +28,14 @@ const StyledTableCell = withStyles((theme: Theme) =>
     body: {
       fontSize: 14,
     },
+    paper: {
+      position: 'absolute',
+      width: 400,
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+    },
   }),
 )(TableCell);
 const StyledTableRow = withStyles((theme: Theme) =>
@@ -38,6 +47,20 @@ const StyledTableRow = withStyles((theme: Theme) =>
     },
   }),
 )(TableRow);
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
+
+function getModalStyle() {
+  const top = 50 + rand();
+  const left = 50 + rand();
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
 
 
 
@@ -80,7 +103,14 @@ mutation delTodo($id: ID!) {
   }
 }
 `
-
+const UPDATE_TODO = gql`
+  mutation updateTodo($id: String!, $task: String!) {
+    updateTodo(id: $id, task: $task) {
+      id
+      task
+    }
+  }
+`
 
 
 
@@ -92,15 +122,37 @@ export default function Home() {
   let inputText;
   const [addTodo] = useMutation(ADD_TODO)
   const [delTodo] = useMutation(DELETE_TASK)
+  const [updateTodo] = useMutation(UPDATE_TODO);
   const { loading, error, data } = useQuery(GET_TODOS);
 
+// Materil ui model
+const [modalStyle] = React.useState(getModalStyle);
+const [open, setOpen] = React.useState(false);
 
+const handleOpen = () => {
+  setOpen(true);
+};
+
+const handleClose = () => {
+  setOpen(false);
+};
+
+const body = (
+  <div style={modalStyle} className={classes.paper}>
+    <h2 id="simple-modal-title">Text in a modal</h2>
+    <p id="simple-modal-description">
+      Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+    </p>
+  
+  </div>
+);
+// Materil ui model end
 
   const addTask = () => {
     addTodo({
       variables: {
         task: inputText.value,
-       
+
       },
       refetchQueries: [{ query: GET_TODOS }]
     })
@@ -138,7 +190,7 @@ export default function Home() {
           inputText = node;
         }} />
       </label>
-      <button onClick={addTask}>Add Task</button>
+      <Button variant="contained" color="primary" onClick={addTask}>Add Task</Button>
 
       <br /><br /><br />
       <TableContainer component={Paper}>
@@ -149,6 +201,7 @@ export default function Home() {
               <StyledTableCell>TASK</StyledTableCell>
               <StyledTableCell>STATUS</StyledTableCell>
               <StyledTableCell>DELETE</StyledTableCell>
+              <StyledTableCell>UPDATE</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -165,12 +218,19 @@ export default function Home() {
 
                 <StyledTableCell>
 
-                  <button onClick={deleteTask} value={da.id}>
+                  <Button variant="contained" color="secondary" onClick={deleteTask} value={da.id}>
                     DeleteTask
-  </button>
+  </Button>
 
                 </StyledTableCell>
-
+                <StyledTableCell>
+                <Button variant="contained" color="primary" onClick={()=>{
+                  handleOpen()
+                }}>
+                    Update Task
+  </Button>
+              
+                </StyledTableCell>
 
               </StyledTableRow>
             ))}
@@ -178,7 +238,14 @@ export default function Home() {
         </Table>
       </TableContainer>
 
-
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        {body}
+      </Modal>
     </div>
   );
 
